@@ -3,6 +3,7 @@ var io, appSocket;
 var idClientIncremental = 0;
 var roomIdIncremental = 0;
 var players = [];
+var asd;
 
 /**
 */
