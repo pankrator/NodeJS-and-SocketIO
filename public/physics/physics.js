@@ -20,7 +20,8 @@ Circle.prototype.update = function() {
 	grav.mult(this.mass);
 	this.applyForce(grav);
 	this.applyForce(leftForce);
-	this.setSpeed(this.acceleration);
+	this.velocity.add(this.acceleration);
+	this.velocity.limit(6);
 	this.position.add(this.velocity);
 	this.acceleration.mult(0);
 }
@@ -72,7 +73,7 @@ Liquid.prototype.draw = function() {
 var gravity = new Vector(0, 0.15);
 var leftForce = new Vector(0, 0);
 
-liquid = new Liquid(200, 200, 300, 300, 0.3);
+liquid = new Liquid(200, 200, 300, 300, 2);
 circle = new Circle(new Vector(250, 0), 20);
 circle2 = new Circle(new Vector(290, 0), 5);
 
@@ -80,10 +81,10 @@ circle2 = new Circle(new Vector(290, 0), 5);
 
 var update = function() {
 	if(circle.position.y >= 200 && circle.position.y <= 500) {
-		circle.drag(liquid);
+		//circle.drag(liquid);
 		circle2.drag(liquid);
 	}
-	circle.update();
+	//circle.update();
 	circle2.update();
 	setTimeout(update, 10);
 }
@@ -91,7 +92,7 @@ var update = function() {
 var draw = function() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	liquid.draw();
-	circle.draw();
+	//circle.draw();
 	circle2.draw();
 	setTimeout(draw, 5);
 }
