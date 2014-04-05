@@ -1,61 +1,57 @@
 var canvas = document.getElementById("physics");
 var ctx = canvas.getContext("2d");
 
-/* class Vector */
-
-var Vector = function(x, y) {
-	this.x = x;
-	this.y = y;	
-}
-
-Vector.prototype.add = function(v) {
-	this.x+=v.x;
-	this.y+=v.y;
-}
-
-Vector.prototype.mult = function(s) {
-	this.x*=s;
-	this.y*=s;
-}
-
-Vector.prototype.get = function() {
-	return new Vector(this.x, this.y);
-}
-
-Vector.prototype.normalize = function() {
-	//console.log(this.len());
-	this.x /= this.len();
-	this.y /= this.len();
-}
-
-Vector.prototype.len = function() {
-	return Math.sqrt(this.x * this.x + this.y * this.y);
-}
-
 /* class Circle */
 
-var Circle = function(position) {
+var Circle = function(position, mass) {
+	this.mass = mass;
 	this.position = position;
 	this.velocity = new Vector(0, 0);
 	this.acceleration = new Vector(0, 0);
 }
 
 Circle.prototype.setSpeed = function(vSpeed) {
-	this.velocity = vSpeed;
+	this.velocity.x = vSpeed.x;
+	this.velocity.y = vSpeed.y;
 }
 
 Circle.prototype.update = function() {
-	//this.velocity.add(this.acceleration);
-	this.applyForce(gravity);
+	var grav = gravity.get();
+	grav.mult(this.mass);
+	this.applyForce(grav);
 	this.applyForce(leftForce);
 	this.setSpeed(this.acceleration);
 	this.position.add(this.velocity);
 	this.acceleration.mult(0);
 }
 
+Circle.prototype.draw = function() {
+	ctx.fillStyle = "black";
+	ctx.beginPath();
+	ctx.arc(this.position.x, this.position.y, this.mass * 2, 0, Math.PI * 2);
+	ctx.fill();
+}
+
 Circle.prototype.applyForce = function(force) {
 	this.acceleration.add(force);
 }
+
+/**
+	Simulate dragging in surface
+	
+	surface: The surface you are going through
+*/
+Circle.prototype.drag = function(surface) {
+	var speed = this.velocity.len();
+	var dragMagnitude = surface.c * speed * speed;
+	var drag = this.velocity.get(); // The drag vector
+	drag.mult(-1);
+	drag.normalize();
+	drag.mult(dragMagnitude);
+	this.applyForce(drag);
+}
+
+/* class Liquid */
 
 var Liquid = function(x, y, width, height, c) {
 	this.x = x;
@@ -73,36 +69,30 @@ Liquid.prototype.draw = function() {
 
 /* Initialization */
 
-var gravity = new Vector(0, 1.2);
-var leftForce = new Vector(1, 0);
+var gravity = new Vector(0, 0.15);
+var leftForce = new Vector(0, 0);
 
-liquid = new Liquid(200, 200, 300, 300);
-circle = new Circle(new Vector(250, 250));
+liquid = new Liquid(200, 200, 300, 300, 0.3);
+circle = new Circle(new Vector(250, 0), 20);
+circle2 = new Circle(new Vector(290, 0), 5);
 
-var i = 0;
 /* Main logic */
 
 var update = function() {
-	/*
-	if(i > 0) {
-		var friction = circle.velocity.get();
-		friction.mult(-1);
-		friction.normalize();
-		friction.mult(1);
-		circle.applyForce(friction);
+	if(circle.position.y >= 200 && circle.position.y <= 500) {
+		circle.drag(liquid);
+		circle2.drag(liquid);
 	}
-	*/
-	i = 1;
 	circle.update();
+	circle2.update();
 	setTimeout(update, 10);
 }
 
 var draw = function() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	liquid.draw();
-	ctx.beginPath();
-	ctx.arc(circle.position.x, circle.position.y, 20, 0, Math.PI*2);
-	ctx.stroke();
+	circle.draw();
+	circle2.draw();
 	setTimeout(draw, 5);
 }
 
