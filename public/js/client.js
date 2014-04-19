@@ -1,10 +1,3 @@
-var App = function() {
-}
-
-App.prototype.init = function() {
-	
-}
-
 var App = {
     
 	remotePlayers: [],
@@ -17,6 +10,7 @@ var App = {
 		Player.name = prompt("Type your player name");
 		Game.init();
 		Game.update();
+		Player.update();
     },
     
     bindEvents: function() {
@@ -98,27 +92,67 @@ var Player = {
 	
 	update: function() {
 		// if(Game.keys[String.fromCharCode(
+		if(Game.mouse.lButton) {
+			console.log("leeeft");
+		}
+		setTimeout(helper.hitch(this, this.update), 20);
 	}
 }
 
 var Game = {
 	
-	keys: null,
+	/** Object containing states of the mouse
+		{
+			x: x coordinates,
+			y: y coordinates,
+			lButton: is left button down
+			rButton: is right button down
+		}
+	**/
+	mouse: {},
+	keys: [],
 	
 	init: function() {
-		window.addEventListener("keydown", this._processKeyboardDown, false);
-		window.addEventListener("keyup", this._processKeyboardUp, false);
+		window.addEventListener("keydown", helper.hitch(this, this._processKeyboardDown), false);
+		window.addEventListener("keyup", helper.hitch(this, this._processKeyboardUp), false);
+		window.addEventListener("mousemove", helper.hitch(this, this._processMouseMove), false);
+		window.addEventListener("mousedown", helper.hitch(this, this._processMouseDown), false);
+		window.addEventListener("mouseup", helper.hitch(this, this._processMouseUp), false);
+	},
+	
+	_processMouseMove: function(ev) {
+		this.mouse.x = ev.x;
+		this.mouse.y = ev.y;
+	},
+	
+	_processMouseDown: function(ev) {
+		switch(ev.button) {
+		case 0:
+			this.mouse.lButton = true;
+			break;
+		case 2:
+			this.mouse.rButton = true;
+			break;
+		}
+	},
+	
+	_processMouseUp: function(ev) {
+		switch(ev.button) {
+		case 0:
+			this.mouse.lButton = false;
+			break;
+		case 2:
+			this.mouse.rButton = false;
+			break;
+		}
 	},
 	
 	_processKeyboardDown: function(ev) {
-		console.log(ev.keyCode);
-		// keys[ev.keyCode] = true;
+		this.keys[parseInt(ev.keyCode)] = true;
 	},
 	
 	_processKeyboardUp: function(ev) {
-		console.log(ev.keyCode);
-		// keys[ev.keyCode] = false;
-		console.log(ev);
+		this.keys[parseInt(ev.keyCode)] = false;
 	},
 
 	update: function() {
@@ -131,8 +165,7 @@ var Game = {
 		
 		area.innerHTML = info;
 		
-		var me = this;
-		setTimeout(function() { me.update(); }, 30);
+		setTimeout(helper.hitch(this, this.update), 30);
 	}
 
 }
