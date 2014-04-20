@@ -12,9 +12,11 @@
 		<script src="/js/client.js"></script>
 		<script src="/js/helpers.js"></script>
 		<div id="area"></div>
+		<canvas id="game" width="800" height="800"></canvas>
 		
 		<script>
 			window.onload = function() {
+				ctx = document.getElementById("game").getContext("2d");
 				App.init();
 			}
 		</script>

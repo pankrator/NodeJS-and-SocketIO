@@ -3,20 +3,22 @@ var io, appSocket;
 var idClientIncremental = 0;
 var roomIdIncremental = 0;
 var players = [];
-var asd;
 
 /**
 */
 exports.initialize = function(serverIO, socket) {
     io = serverIO;
     appSocket = socket;
-    idClientIncremental++;
-    appSocket.emit('connected', {id: idClientIncremental, message: "You are connected !" });
 	
-	appSocket.on('hostCreateNewRoom', hostCreateNewRoom);
+	/** Basic game events **/
+    appSocket.emit('connected', { message: "You are connected !" });
+	appSocket.on('disconnect', handleDisconnect);
 	appSocket.on('newPlayerConnected', newPlayerConnected);
 	appSocket.on('getAllPlayers', handleGetAllPlayers);
-	appSocket.on('disconnect', handleDisconnect);
+	
+	/** Game specific events **/
+	appSocket.on('hostCreateNewRoom', hostCreateNewRoom);
+	appSocket.on('stickerMove', handleStickerMove);
 }
 
 /**
@@ -48,6 +50,13 @@ function newPlayerConnected(data) {
 
 function handleGetAllPlayers() {
 	this.emit("handleAllPlayers", players);
+}
+
+function handleStickerMove(data) {
+	var player = findPlayer(data.uniqueSocket);
+	player.sticker.x = data.x;
+	player.sticker.y = data.y;
+	this.broadcast.emit("stickerMove", data);
 }
 
 

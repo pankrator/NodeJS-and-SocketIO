@@ -7,97 +7,73 @@ var App = {
     init: function() {
 		this.socket = io.connect("", {port: 8000, transports: ["websocket"]});
         this.bindEvents();
-		Player.name = prompt("Type your player name");
+		var name = prompt("Type your player name");
+		Player.name = name;
+		console.log(name);
 		Game.init();
 		Game.update();
 		Player.update();
+		Game.draw();
     },
     
     bindEvents: function() {
-        this.socket.on("connected", this._onConnected);
-        this.socket.on("newRoomCreated", this._onNewRoomCreated);
-		this.socket.on("newPlayerConnected", this._onPlayerConnected);
-		this.socket.on("handleAllPlayers", this._handleAllPlayers);
-		this.socket.on("removePlayer", this._handleRemovePlayer);
+        this.socket.on("connected", helper.hitch(this, this._onConnected));
+        this.socket.on("newRoomCreated", helper.hitch(this, this._onNewRoomCreated));
+		this.socket.on("newPlayerConnected", helper.hitch(this, this._onPlayerConnected));
+		this.socket.on("handleAllPlayers", helper.hitch(this, this._handleAllPlayers));
+		this.socket.on("removePlayer", helper.hitch(this, this._handleRemovePlayer));
+		this.socket.on("stickerMove", helper.hitch(this, this._handleStickerMove));
     },
 	
 	_handleRemovePlayer: function(data) {
-		console.log(data);
-		var ind = App.findPlayer(data.uniqueSocket);
-		App.remotePlayers.splice(ind,1);
+		var ind = this.findPlayer(data.uniqueSocket);
+		this.remotePlayers.splice(ind,1);
+		console.log("Player with name " + data.name + " has just disconnected");
 	},
 	
 	findPlayer: function(id) {
-		for(var i = 0; i < App.remotePlayers.length; i++) {
-			if(App.remotePlayers[i].uniqueSocket == id) {
-				return i
+		for(var i = 0; i < this.remotePlayers.length; i++) {
+			if(this.remotePlayers[i].uniqueSocket == id) {
+				return i;
 			}
 		}
 	},
     
     _onConnected: function(data) {
-		this.emit("getAllPlayers");
+		this.socket.emit("getAllPlayers");
 
 		var newPlayer = {
-			id:data.id,
 			name: Player.name,
-			uniqueSocket: this.socket.sessionid
+			uniqueSocket: this.socket.socket.sessionid
 		};
 		
-		this.emit("newPlayerConnected", newPlayer);
-		App.remotePlayers.push(newPlayer);
 		Player.create(newPlayer);
-		
-        console.log("Server: " + data.message + " Welcome player with id " + data.id);
+		this.socket.emit("newPlayerConnected", Player);
     },
 	
 	_handleAllPlayers: function(/* Array */allPlayers) {
-		App.remotePlayers = allPlayers;
+		this.remotePlayers = allPlayers;
 	},
 	
 	_onPlayerConnected: function(data) {
-		App.remotePlayers.push(data);
+		this.remotePlayers.push(data);
 		console.log("Server: Hey! New player has just connected his name is " + data.name);
+	},
+	
+	_handleStickerMove: function(data) {
+		var ind = this.findPlayer(data.uniqueSocket);
+		this.remotePlayers[ind].sticker.x = data.x;
+		this.remotePlayers[ind].sticker.y = data.y;
 	},
 	
 	_onNewRoomCreated: function(data) {
 		
 	},
-    
-    __sayMyId: function() {
-		console.log("id: " + App.uniqueId);
-		var me = this;
-		setTimeout(function() { me.sayMyId(); }, 1000);
-    },
 	
 	createGame: function() {
 		this.socket.emit("hostCreateNewRoom");
 	}
 };
-
-var Player = {
-	
-	id: null,
-	
-	name: null,
-	
-	/**
-		Something like copy constructor
-		Populates all data of Player with other information from obj
-	*/
-	create: function(obj) {
-		this.id = obj.id;
-		this.name = obj.name;
-	},
-	
-	update: function() {
-		// if(Game.keys[String.fromCharCode(
-		if(Game.mouse.lButton) {
-			console.log("leeeft");
-		}
-		setTimeout(helper.hitch(this, this.update), 20);
-	}
-}
 
 var Game = {
 	
@@ -112,17 +88,33 @@ var Game = {
 	mouse: {},
 	keys: [],
 	
+	/**
+		Holds the main canvas object
+	**/
+	canvas: null,
+	/**
+		Holds the main canvas context
+	**/
+	ctx: null,
+	bounds: null,
+	
 	init: function() {
+		this.canvas = document.getElementById("game");
+		this.ctx = this.canvas.getContext("2d");
+		this.bounds = this.canvas.getBoundingClientRect();
+		
 		window.addEventListener("keydown", helper.hitch(this, this._processKeyboardDown), false);
 		window.addEventListener("keyup", helper.hitch(this, this._processKeyboardUp), false);
-		window.addEventListener("mousemove", helper.hitch(this, this._processMouseMove), false);
-		window.addEventListener("mousedown", helper.hitch(this, this._processMouseDown), false);
-		window.addEventListener("mouseup", helper.hitch(this, this._processMouseUp), false);
+		this.canvas.addEventListener("mousemove", helper.hitch(this, this._processMouseMove), false);
+		this.canvas.addEventListener("mousedown", helper.hitch(this, this._processMouseDown), false);
+		this.canvas.addEventListener("mouseup", helper.hitch(this, this._processMouseUp), false);
 	},
 	
 	_processMouseMove: function(ev) {
-		this.mouse.x = ev.x;
-		this.mouse.y = ev.y;
+		this.bounds = this.canvas.getBoundingClientRect();
+		this.mouse.x = ev.clientX - this.bounds.left;
+		this.mouse.y = ev.clientY - this.bounds.top;
+		
 	},
 	
 	_processMouseDown: function(ev) {
@@ -165,7 +157,80 @@ var Game = {
 		
 		area.innerHTML = info;
 		
-		setTimeout(helper.hitch(this, this.update), 30);
+		setTimeout(helper.hitch(this, this.update), 300);
+	},
+	
+	draw: function() {
+		this.ctx.clearRect(0, 0, 800, 800);
+		for(var i = 0; i < App.remotePlayers.length; i++) {
+			var currPlayer = App.remotePlayers[i];
+			this.ctx.fillStyle = "black";
+			this.ctx.fillRect(currPlayer.sticker.x, currPlayer.sticker.y, currPlayer.sticker.width, currPlayer.sticker.height);
+			this.ctx.fillText(currPlayer.name, currPlayer.sticker.x, currPlayer.sticker.y);
+			this.ctx.fill();
+		}
+		
+		Sticker.draw();
+		
+		setTimeout(helper.hitch(this, this.draw), 10);
 	}
+}
 
+var Player = {
+	
+	/**
+		This is the socketId by witch the players are identified
+	**/
+	uniqueSocket: null,
+	
+	name: null,
+	sticker: null,
+	
+	/**
+		Something like copy constructor
+		Populates all data of Player with other information from obj
+	*/
+	create: function(obj) {
+		this.uniqueSocket = obj.uniqueSocket;
+		this.name = obj.name;
+		this.sticker = Sticker;
+	},
+	
+	update: function() {
+		if(Game.mouse.lButton) {
+			if(Sticker.isInside(Game.mouse.x, Game.mouse.y)) {
+				Sticker.x = Game.mouse.x - Sticker.width/2;
+				Sticker.y = Game.mouse.y - Sticker.height/2;
+				App.socket.emit("stickerMove", { uniqueSocket: this.uniqueSocket, x: Sticker.x, y: Sticker.y });
+			}
+		}
+		setTimeout(helper.hitch(this, this.update), 20);
+	}
+}
+
+var Sticker = {
+	x: 0,
+	y: 0,
+	width: 50,
+	height: 50,
+	color: "#ff3e4d",
+	
+	draw: function() {
+		Game.ctx.fillStyle = this.color;
+		Game.ctx.fillRect(this.x, this.y, this.width, this.height);
+		Game.ctx.fill();
+		//setTimeout(helper.hitch(this, this.draw), 20);
+	},
+	
+	isInside: function(x, y) {
+		if(x >= this.x && x <= this.x + this.width &&
+			y >= this.y && y <= this.y + this.height) {
+			return true;
+		}
+		return false;
+	}
+}
+
+var Wall = function() {
+	
 }
