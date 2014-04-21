@@ -1,12 +1,18 @@
+var Game = require('./game');
+
 var io, appSocket;
 
 var idClientIncremental = 0;
 var roomIdIncremental = 0;
 var players = [];
+var walls = [];
 
 /**
 */
 exports.initialize = function(serverIO, socket) {
+	var w = new Game.Wall(300, 200, 300,50, "blue");
+	walls.push(w);
+	
     io = serverIO;
     appSocket = socket;
 	
@@ -19,6 +25,9 @@ exports.initialize = function(serverIO, socket) {
 	/** Game specific events **/
 	appSocket.on('hostCreateNewRoom', hostCreateNewRoom);
 	appSocket.on('stickerMove', handleStickerMove);
+	
+	/** Environment specific events **/
+	appSocket.on('requestWalls', handleRequestWalls);
 }
 
 /**
@@ -30,6 +39,10 @@ function hostCreateNewRoom() {
 	roomIdIncremental++;
 	
 	this.emit("newRoomCreated", { roomId: roomIdIncremental });
+}
+
+function handleRequestWalls() {
+	this.emit("sendWalls", walls);
 }
 
 function handleDisconnect() {

@@ -5,14 +5,32 @@
 	<head>
 		<title>Ask your Question App</title>
 		<meta charset="utf-8">
+		
+		<!-- Very bad style !! -->
+		<style>
+			.canvas-container {
+				position: relative;
+			}
+			
+			.layered-canvas {
+				position: absolute;
+				left: 0;
+				right: 0;
+			}
+		</style>
 	</head>
 	
 	<body>
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="/js/client.js"></script>
 		<script src="/js/helpers.js"></script>
+		<script src="/js/game.js"></script>
+		
 		<div id="area"></div>
-		<canvas id="game" width="800" height="800"></canvas>
+		<div class="canvas-container">
+			<canvas class="layered-canvas" id="static" width="800" height="800"></canvas>
+			<canvas class="layered-canvas" id="game" width="800" height="800"></canvas>
+		</div>
 		
 		<script>
 			window.onload = function() {

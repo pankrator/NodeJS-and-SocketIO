@@ -1,6 +1,7 @@
 var App = {
     
 	remotePlayers: [],
+	walls: [],
 	
 	socket: null,
     
@@ -9,21 +10,34 @@ var App = {
         this.bindEvents();
 		var name = prompt("Type your player name");
 		Player.name = name;
-		console.log(name);
+		
 		Game.init();
 		Game.update();
+		Game.updateWalls();
 		Player.update();
+		Game.drawOnce();
 		Game.draw();
     },
     
     bindEvents: function() {
+		/** Basic game events **/
         this.socket.on("connected", helper.hitch(this, this._onConnected));
-        this.socket.on("newRoomCreated", helper.hitch(this, this._onNewRoomCreated));
 		this.socket.on("newPlayerConnected", helper.hitch(this, this._onPlayerConnected));
 		this.socket.on("handleAllPlayers", helper.hitch(this, this._handleAllPlayers));
 		this.socket.on("removePlayer", helper.hitch(this, this._handleRemovePlayer));
+		
+		/** Game Specific events **/
+		this.socket.on("newRoomCreated", helper.hitch(this, this._onNewRoomCreated));
 		this.socket.on("stickerMove", helper.hitch(this, this._handleStickerMove));
+		
+		/** Environment Specific events **/
+		this.socket.on("sendWalls", helper.hitch(this, this._handleSendWalls));
     },
+	
+	_handleSendWalls: function(data) {
+		this.walls = data;
+		Game.drawOnce();
+	},
 	
 	_handleRemovePlayer: function(data) {
 		var ind = this.findPlayer(data.uniqueSocket);
@@ -96,13 +110,18 @@ var Game = {
 		Holds the main canvas context
 	**/
 	ctx: null,
+	/**
+		Use this static ctx to draw static objects on it
+	**/
+	staticCtx: null,
 	bounds: null,
 	
 	init: function() {
 		this.canvas = document.getElementById("game");
 		this.ctx = this.canvas.getContext("2d");
+		this.staticCtx = document.getElementById("static").getContext("2d");
 		this.bounds = this.canvas.getBoundingClientRect();
-		
+				
 		window.addEventListener("keydown", helper.hitch(this, this._processKeyboardDown), false);
 		window.addEventListener("keyup", helper.hitch(this, this._processKeyboardUp), false);
 		this.canvas.addEventListener("mousemove", helper.hitch(this, this._processMouseMove), false);
@@ -114,7 +133,6 @@ var Game = {
 		this.bounds = this.canvas.getBoundingClientRect();
 		this.mouse.x = ev.clientX - this.bounds.left;
 		this.mouse.y = ev.clientY - this.bounds.top;
-		
 	},
 	
 	_processMouseDown: function(ev) {
@@ -160,6 +178,11 @@ var Game = {
 		setTimeout(helper.hitch(this, this.update), 300);
 	},
 	
+	updateWalls: function() {
+		App.socket.emit("requestWalls");
+		setTimeout(helper.hitch(this, this.updateWalls), 5000);
+	},
+	
 	draw: function() {
 		this.ctx.clearRect(0, 0, 800, 800);
 		for(var i = 0; i < App.remotePlayers.length; i++) {
@@ -173,6 +196,15 @@ var Game = {
 		Sticker.draw();
 		
 		setTimeout(helper.hitch(this, this.draw), 10);
+	},
+	
+	drawOnce: function() {
+		this.staticCtx.clearRect(0, 0, 800, 800);
+		for(var i = 0; i < App.walls.length; i++) {
+			var w = new Wall();
+			w.copy(App.walls[i]);
+			w.draw(this.staticCtx);
+		}
 	}
 }
 
@@ -199,11 +231,25 @@ var Player = {
 	update: function() {
 		if(Game.mouse.lButton) {
 			if(Sticker.isInside(Game.mouse.x, Game.mouse.y)) {
+				for(var i = 0; i < App.walls.length; i++) {
+					var w = new Wall();
+					w.copy(App.walls[i]);
+					
+					var distX = Math.abs(Game.mouse.x - (w.x + w.width/2));
+					var distY = Math.abs(Game.mouse.y - (w.y + w.height/2));
+					//console.log(distX, distY);
+					
+					if(distX <= w.width/2 && distY <= w.height/2) {
+						setTimeout(helper.hitch(this, this.update), 20);
+						return;
+					}
+				}	
 				Sticker.x = Game.mouse.x - Sticker.width/2;
 				Sticker.y = Game.mouse.y - Sticker.height/2;
 				App.socket.emit("stickerMove", { uniqueSocket: this.uniqueSocket, x: Sticker.x, y: Sticker.y });
 			}
 		}
+		
 		setTimeout(helper.hitch(this, this.update), 20);
 	}
 }
@@ -229,8 +275,4 @@ var Sticker = {
 		}
 		return false;
 	}
-}
-
-var Wall = function() {
-	
 }
