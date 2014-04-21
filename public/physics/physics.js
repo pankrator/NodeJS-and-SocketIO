@@ -21,7 +21,7 @@ Circle.prototype.update = function() {
 	this.applyForce(grav);
 	this.applyForce(leftForce);
 	this.velocity.add(this.acceleration);
-	this.velocity.limit(6);
+	this.velocity.limit(10);
 	this.position.add(this.velocity);
 	this.acceleration.mult(0);
 }
@@ -70,29 +70,32 @@ Liquid.prototype.draw = function() {
 
 /* Initialization */
 
-var gravity = new Vector(0, 0.15);
+var gravity = new Vector(0, 0.05);
 var leftForce = new Vector(0, 0);
 
-liquid = new Liquid(200, 200, 300, 300, 2);
+liquid = new Liquid(200, 200, 300, 300, 0.1);
 circle = new Circle(new Vector(250, 0), 20);
-circle2 = new Circle(new Vector(290, 0), 5);
+circle2 = new Circle(new Vector(290, 0), 10);
 
 /* Main logic */
 
 var update = function() {
-	if(circle.position.y >= 200 && circle.position.y <= 500) {
-		//circle.drag(liquid);
-		circle2.drag(liquid);
+	//if(circle2.position.y >= liquid.y && circle2.position.y <= liquid.x + liquid.height) {
+//		circle2.drag(liquid);
+	//}
+	
+	if(circle.position.y >= liquid.y && circle.position.y <= liquid.height) {
+		circle.drag(liquid);
 	}
-	//circle.update();
+	circle.update();
 	circle2.update();
-	setTimeout(update, 10);
+	setTimeout(update, 20);
 }
 
 var draw = function() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	liquid.draw();
-	//circle.draw();
+	circle.draw();
 	circle2.draw();
 	setTimeout(draw, 5);
 }
