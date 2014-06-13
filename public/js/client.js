@@ -3,31 +3,59 @@ var App = {
 	remotePlayers: [],
 	walls: [],
 	
+	basicEventHandler: null,
+	worldEventHandler: null,
+	world: null,
+	canvas: null,
+	renderer: null,
+	inputManager: null,
+	
+	ready: null,
+	
 	socket: null,
     
     init: function() {
 		this.socket = io.connect("", {port: 8000, transports: ["websocket"]});
-        this.bindEvents();
-		var name = prompt("Type your player name");
-		Player.name = name;
 		
-		Game.init();
-		Game.update();
-		Game.updateWalls();
-		Player.update();
-		Game.drawOnce();
-		Game.draw();
+		this.canvas = document.getElementById("game");
+		this.renderer = new Renderer(this.canvas.getContext("2d"));
+		
+		this.world = new World();
+		this.basicEventHandler = new BasicEventHandler(this.socket, this.world);
+		this.worldEventHandler = new WorldEventHandler(this.socket, this.world);
+		
+		this.inputManager = new InputManager();
+		
+        //this.bindEvents();
+		
+		//var name = prompt("Type your player name", "asd");
+		//Player.name = name;
+		
+		//Game.init();
+		//Game.update();
+		//Game.updateWalls();
+		//Player.update();
+		//Game.drawOnce();
+		//Game.draw();
     },
+	
+	start: function() {
+		
+		this.world.update();
+		this.renderer.render();
+		
+		setTimeout(helper.hitch(this, this.start), 20);
+	},
     
     bindEvents: function() {
 		/** Basic game events **/
+		
         this.socket.on("connected", helper.hitch(this, this._onConnected));
 		this.socket.on("newPlayerConnected", helper.hitch(this, this._onPlayerConnected));
 		this.socket.on("handleAllPlayers", helper.hitch(this, this._handleAllPlayers));
 		this.socket.on("removePlayer", helper.hitch(this, this._handleRemovePlayer));
 		
 		/** Game Specific events **/
-		this.socket.on("newRoomCreated", helper.hitch(this, this._onNewRoomCreated));
 		this.socket.on("stickerMove", helper.hitch(this, this._handleStickerMove));
 		
 		/** Environment Specific events **/
@@ -78,10 +106,6 @@ var App = {
 		var ind = this.findPlayer(data.uniqueSocket);
 		this.remotePlayers[ind].sticker.x = data.x;
 		this.remotePlayers[ind].sticker.y = data.y;
-	},
-	
-	_onNewRoomCreated: function(data) {
-		
 	},
 	
 	createGame: function() {
@@ -200,57 +224,17 @@ var Game = {
 	
 	drawOnce: function() {
 		this.staticCtx.clearRect(0, 0, 800, 800);
+		
+		this.staticCtx.fillRect(10,10,100,100);
+		this.staticCtx.fill();
+		/*
+		this.staticCtx.clearRect(0, 0, 800, 800);
 		for(var i = 0; i < App.walls.length; i++) {
 			var w = new Wall();
 			w.copy(App.walls[i]);
 			w.draw(this.staticCtx);
 		}
-	}
-}
-
-var Player = {
-	
-	/**
-		This is the socketId by witch the players are identified
-	**/
-	uniqueSocket: null,
-	
-	name: null,
-	sticker: null,
-	
-	/**
-		Something like copy constructor
-		Populates all data of Player with other information from obj
-	*/
-	create: function(obj) {
-		this.uniqueSocket = obj.uniqueSocket;
-		this.name = obj.name;
-		this.sticker = Sticker;
-	},
-	
-	update: function() {
-		if(Game.mouse.lButton) {
-			if(Sticker.isInside(Game.mouse.x, Game.mouse.y)) {
-				for(var i = 0; i < App.walls.length; i++) {
-					var w = new Wall();
-					w.copy(App.walls[i]);
-					
-					var distX = Math.abs(Game.mouse.x - (w.x + w.width/2));
-					var distY = Math.abs(Game.mouse.y - (w.y + w.height/2));
-					//console.log(distX, distY);
-					
-					if(distX <= w.width/2 && distY <= w.height/2) {
-						setTimeout(helper.hitch(this, this.update), 20);
-						return;
-					}
-				}	
-				Sticker.x = Game.mouse.x - Sticker.width/2;
-				Sticker.y = Game.mouse.y - Sticker.height/2;
-				App.socket.emit("stickerMove", { uniqueSocket: this.uniqueSocket, x: Sticker.x, y: Sticker.y });
-			}
-		}
-		
-		setTimeout(helper.hitch(this, this.update), 20);
+		*/
 	}
 }
 
