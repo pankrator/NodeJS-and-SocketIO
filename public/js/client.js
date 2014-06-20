@@ -1,13 +1,14 @@
 var App = {
-    
-	remotePlayers: [],
-	walls: [],
 	
 	basicEventHandler: null,
 	worldEventHandler: null,
+	
 	world: null,
+	
 	canvas: null,
 	renderer: null,
+	tileMap: null,
+	
 	camera: null,
 	inputManager: null,
 	
@@ -22,6 +23,9 @@ var App = {
 		this.renderer = new Renderer(this.canvas.getContext("2d"));
 		this.camera = new Camera();
 		
+		var img = new Image();
+		img.src = "js/bla5.png"
+		this.tileMap = new TileMap(600, 600, img);
 		this.world = new World();
 		this.basicEventHandler = new BasicEventHandler(this.socket, this.world);
 		this.worldEventHandler = new WorldEventHandler(this.socket, this.world);
