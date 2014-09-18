@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+	<head>
+		<title>Ask your Question App</title>
+		<meta charset="utf-8">
+		
+		<!-- Very bad style !! -->
+		<style>
+			.canvas-container {
+				position: relative;
+			}
+			
+			.layered-canvas {
+				position: absolute;
+				left: 0;
+				right: 0;
+			}
+		</style>
+	</head>
+	
+	<body>
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="input/InputManager.js"></script>
+		<script src="input/keys.js"></script>
+		<script src="BasicEventHandler.js"></script>
+		<!--
+		<script src="WorldEventHandler.js"></script>   
+		-->		
+		<script src="GameObject.js"></script>
+		<script src="physics/CollisionMesh.js"></script>
+		<script src="Obstacle.js"></script>
+		<script src="Renderer.js"></script>
+		<script src="Entity.js"></script>
+		<script src="TileMap.js"></script>
+		<script src="Camera.js"></script>
+		<script src="Player.js"></script>
+		<script src="World.js"></script>
+		<script src="client.js"></script>
+		<script src="helpers.js"></script>
+		<script src="network/NetworkView.js"></script>
+		<script src="network/NetworkUpdateContext.js"></script>
+		<script src="network/NetworkObjectCreator.js"></script>
+		
+		<div id="area"></div>
+		<div class="canvas-container">
+			<canvas class="layered-canvas" id="static" width="800" height="800"></canvas>
+			<canvas class="layered-canvas" id="game" width="800" height="800"></canvas>
+		</div>
+		
+	</body>
+</html>
