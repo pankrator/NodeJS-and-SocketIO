@@ -14,7 +14,7 @@ module MainModule {
 			this.socket.on("connected", this.onConnected);
 			this.socket.on("newPlayerConnected", this.onPlayerConnected);
 			this.socket.on("handleAllPlayers", this.handleAllPlayers);
-//			this.socket.on("removePlayer", this.handleRemovePlayer);
+			this.socket.on("playerDisconnect", this.handlePlayerDisconnect);
 		}
 
 		private onPlayerConnected = (data: any): void => {
@@ -50,6 +50,11 @@ module MainModule {
 				this.world.remotePlayers[id] = p;
 			}
 		}
+        
+        private handlePlayerDisconnect = (id): void => {
+            delete this.world.remotePlayers[id];
+            console.log("Player " + id + " has just disconnected");
+        }
 
 //		public handleRemovePlayer(data: Player): void {
 //			var ind = this.world.findPlayer(data.uniqueSocket);

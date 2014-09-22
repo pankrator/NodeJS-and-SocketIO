@@ -35,13 +35,17 @@ var MainModule;
                     _this.world.remotePlayers[id] = p;
                 }
             };
+            this.handlePlayerDisconnect = function (id) {
+                delete _this.world.remotePlayers[id];
+                console.log("Player " + id + " has just disconnected");
+            };
             this.socket = socket;
             this.world = world;
 
             this.socket.on("connected", this.onConnected);
             this.socket.on("newPlayerConnected", this.onPlayerConnected);
             this.socket.on("handleAllPlayers", this.handleAllPlayers);
-            //			this.socket.on("removePlayer", this.handleRemovePlayer);
+            this.socket.on("playerDisconnect", this.handlePlayerDisconnect);
         }
         return BasicEventHandler;
     })();
