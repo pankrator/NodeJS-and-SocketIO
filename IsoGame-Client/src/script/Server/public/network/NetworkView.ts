@@ -26,11 +26,15 @@ module MainModule {
 		}
 		
 		private updateTarget = (data: any): void => {
-			this.target.updateState(data);
+            if(this.target == null) {
+                this.socket.removeListener("update" + this.updateContext + this.id, this.updateTarget);  
+            } else {
+                this.target.updateState(data);
+            }
 		}
 		
 		public update = (): void => {
-			var data = new Array<any>();
+            var data = new Array<any>();
 			var dirty = false;
 			for(var i = 0; i < this.properties.length; i++) {
 				if(this.target[this.properties[i].name] != this.properties[i].value) {
@@ -45,7 +49,9 @@ module MainModule {
 			}
 			if(this.target != null) {
 				window.setTimeout(this.update, 100);
-			}
+			} else {
+                this.socket.removeListener("update" + this.updateContext + this.id, this.updateTarget);
+            }
 		}
 	}	
 }
