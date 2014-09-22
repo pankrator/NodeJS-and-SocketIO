@@ -3,6 +3,7 @@ module MainModule {
 		public keys: Array<boolean>;
 		public mouseX: number;
 		public mouseY: number;
+        public mouseDown: boolean;
 		
 		constructor() {
 			this.keys = new Array<boolean>();
@@ -12,6 +13,8 @@ module MainModule {
 			window.addEventListener("keydown", this.handleKeyDown, false);
 			window.addEventListener("keyup", this.handleKeyUp, false);
 			window.addEventListener("mousemove", this.handleMouseMove, false);
+            window.addEventListener("mousedown", this.handleMouseDown, false);
+            window.addEventListener("mouseup", this.handleMouseUp, false);
 		}
 		
 		handleKeyDown = (key: KeyboardEvent) => {
@@ -27,5 +30,13 @@ module MainModule {
 			this.mouseX = mouse.clientX - bounds.left;
 			this.mouseY = mouse.clientY - bounds.top;
 		}
+        
+        handleMouseDown = (mouse: MouseEvent) => {
+            this.mouseDown = true;
+        }
+        
+        handleMouseUp = (mouse: MouseEvent) => {
+            this.mouseDown = false;
+        }
 	}
 }

@@ -4,8 +4,21 @@ var MainModule;
         function Renderer(context) {
             this.context = context;
         }
+        Renderer.screenToIso = function (screenX, screenY) {
+            var isoX = Math.floor(screenY / 64 + screenX / (2 * 64));
+            var isoY = Math.floor(screenY / 64 - screenX / (2 * 64));
+
+            return [isoX, isoY];
+        };
+
         Renderer.prototype.render = function (camera) {
+            var _this = this;
+            window.requestAnimationFrame(function () {
+                _this.render(camera);
+            });
+
             this.context.clearRect(0, 0, camera.canvasWidth, camera.canvasHeight);
+
             this.context.save();
             this.context.translate(camera.x, camera.y);
 
@@ -25,41 +38,23 @@ var MainModule;
             for (var i = 0; i < remotes.length; i++) {
                 remotes[i].draw(this.context);
             }
+
             this.context.restore();
+
+            if (MainModule.App.inputManager.mouseDown) {
+                var mouseX = MainModule.App.inputManager.mouseX, mouseY = MainModule.App.inputManager.mouseY;
+                this.context.strokeStyle = "green";
+                var isoMouse = Renderer.screenToIso(mouseX, mouseY);
+
+                this.context.moveTo((isoMouse[0] * 64 - isoMouse[1] * 64), (isoMouse[1] * 64 + isoMouse[0] * 64) / 2);
+                this.context.lineTo(((isoMouse[0] + 1) * 64 - isoMouse[1] * 64), (isoMouse[1] * 64 + (isoMouse[0] + 1) * 64) / 2);
+                this.context.lineTo(((isoMouse[0] + 1) * 64 - (isoMouse[1] + 1) * 64), ((isoMouse[1] + 1) * 64 + (isoMouse[0] + 1) * 64) / 2);
+
+                //                this.context.lineTo((isoMouse[0] * 64 - isoMouse[1] * 64), (isoMouse[1] * 64 + isoMouse[0]) / 2);
+                this.context.stroke();
+            }
         };
         return Renderer;
     })();
     MainModule.Renderer = Renderer;
 })(MainModule || (MainModule = {}));
-//var Renderer = function(context) {
-//	this.context = context;
-//
-//}
-//
-//Renderer.prototype.render = function() {
-//
-//	this.context.clearRect(0,0, 800, 800);
-//
-//	this.context.save();
-//
-//	this.context.translate(App.camera.x, App.camera.y);
-//
-//	App.tileMap.draw(this.context);
-//
-//	App.world.player.draw(this.context);
-//
-//	for(var i = 0; i < App.world.remotePlayers.length; i++) {
-//		App.world.remotePlayers[i].draw(this.context);
-//	}
-//	/*
-//	for(var i = 0; i < App.world.map.walls.length; i++) {
-//		App.world.map.walls[i].draw(this.context);
-//	}
-//	*/
-//	for(var i = 0; i < App.world.entities.length; i++) {
-//		App.world.entities[i].draw(this.context);
-//	}
-//
-//	this.context.restore();
-//}
-//
