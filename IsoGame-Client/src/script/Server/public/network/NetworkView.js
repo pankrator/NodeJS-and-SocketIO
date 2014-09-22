@@ -4,7 +4,11 @@ var MainModule;
         function NetworkView(target, socket, context, id) {
             var _this = this;
             this.updateTarget = function (data) {
-                _this.target.updateState(data);
+                if (_this.target == null) {
+                    _this.socket.removeListener("update" + _this.updateContext + _this.id, _this.updateTarget);
+                } else {
+                    _this.target.updateState(data);
+                }
             };
             this.update = function () {
                 var data = new Array();
@@ -22,6 +26,8 @@ var MainModule;
                 }
                 if (_this.target != null) {
                     window.setTimeout(_this.update, 100);
+                } else {
+                    _this.socket.removeListener("update" + _this.updateContext + _this.id, _this.updateTarget);
                 }
             };
             this.target = target;
