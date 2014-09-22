@@ -9,9 +9,10 @@ var BasicEventHandler = (function () {
             _this.socket.emit("handleAllPlayers", _this.world.players);
         };
         this.handleDisconnect = function () {
-            //	var ind = this.world.findPlayer(this.socket.id);
-            //	var player = this.world.players[ind];
-            //	this.world.players.splice(ind,1);
+            console.log("player disconnected " + _this.socket.id);
+            delete _this.world.players[_this.socket.id];
+
+            _this.socket.broadcast.emit("playerDisconnect", _this.socket.id);
         };
         this.socket = socket;
         this.world = world;
