@@ -59,5 +59,6 @@ module MainModule {
 }
 
 window.onload = function() {
+    MainModule.Resizer.installHandler(<HTMLCanvasElement>document.getElementById("game"));
     MainModule.App.init();
 }

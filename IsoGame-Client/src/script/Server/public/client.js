@@ -44,5 +44,6 @@ var MainModule;
 })(MainModule || (MainModule = {}));
 
 window.onload = function () {
+    MainModule.Resizer.installHandler(document.getElementById("game"));
     MainModule.App.init();
 };

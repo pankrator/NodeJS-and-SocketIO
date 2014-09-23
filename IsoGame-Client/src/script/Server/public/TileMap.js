@@ -62,12 +62,22 @@ var MainModule;
                 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
                 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
                 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
+
+            this.collisionData = [];
+            for (var i = 0; i < this.mapData.length; i++) {
+                this.collisionData[i] = new Array();
+            }
         }
         TileMap.prototype.draw = function (ctx) {
             for (var i = 0; i < this.mapData.length; i++) {
                 for (var j = 0; j < this.mapData[i].length; j++) {
+                    var iso = MainModule.Renderer.screenToIso((i * 48) - (j * 48), (j * 48 + i * 48) / 2);
+                    if (iso[0] >= 0 && iso[1] >= 0) {
+                        this.collisionData[iso[0]][iso[1]] = this.mapData[i][j];
+                    }
                     if (this.mapData[i][j] == 1) {
                         ctx.drawImage(this.images[0], (i * 48) - (j * 48), (j * 48 + i * 48) / 2);
+                        ctx.strokeText(iso[0] + " " + iso[1], (i * 48) - (j * 48), (j * 48 + i * 48) / 2);
                     } else if (this.mapData[i][j] == 2) {
                         ctx.fillRect((i * 48) - (j * 48), (j * 48 + i * 48) / 2, 5, 5);
                         ctx.drawImage(this.images[1], (i * 48) - (j * 48), (j * 48 + i * 48) / 2);

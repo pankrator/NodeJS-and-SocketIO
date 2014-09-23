@@ -14,12 +14,19 @@ module MainModule {
             return [isoX, isoY];
         }
 
+        public static screenToGrid(screenX, screenY): number[] {
+            var gridX = Math.floor(screenX / 48);
+            var gridY = Math.floor(screenY / 48);
+            
+            return [gridX, gridY];
+        }
+
         public render(camera: Camera): void {
             window.requestAnimationFrame((): void => {
                 this.render(camera);
             });
 
-            this.context.clearRect(0, 0, camera.canvasWidth, camera.canvasHeight);
+            this.context.clearRect(0, 0, App.canvas.width, App.canvas.height);
 
             this.context.save();
             this.context.translate(camera.x, camera.y);
@@ -48,12 +55,12 @@ module MainModule {
                     mouseY = App.inputManager.mouseY;
                 this.context.strokeStyle = "green";
                 var isoMouse = Renderer.screenToIso(mouseX, mouseY);
-                
+
                 this.context.moveTo((isoMouse[0] * 64 - isoMouse[1] * 64), (isoMouse[1] * 64 + isoMouse[0] * 64) / 2);
                 this.context.lineTo(((isoMouse[0] + 1) * 64 - isoMouse[1] * 64), (isoMouse[1] * 64 + (isoMouse[0] + 1) * 64) / 2);
                 this.context.lineTo(((isoMouse[0] + 1) * 64 - (isoMouse[1] + 1) * 64), ((isoMouse[1] + 1) * 64 + (isoMouse[0] + 1) * 64) / 2);
 
-//                this.context.lineTo((isoMouse[0] * 64 - isoMouse[1] * 64), (isoMouse[1] * 64 + isoMouse[0]) / 2);
+                //                this.context.lineTo((isoMouse[0] * 64 - isoMouse[1] * 64), (isoMouse[1] * 64 + isoMouse[0]) / 2);
 
                 this.context.stroke();
             }

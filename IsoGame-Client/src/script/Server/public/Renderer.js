@@ -11,13 +11,20 @@ var MainModule;
             return [isoX, isoY];
         };
 
+        Renderer.screenToGrid = function (screenX, screenY) {
+            var gridX = Math.floor(screenX / 48);
+            var gridY = Math.floor(screenY / 48);
+
+            return [gridX, gridY];
+        };
+
         Renderer.prototype.render = function (camera) {
             var _this = this;
             window.requestAnimationFrame(function () {
                 _this.render(camera);
             });
 
-            this.context.clearRect(0, 0, camera.canvasWidth, camera.canvasHeight);
+            this.context.clearRect(0, 0, MainModule.App.canvas.width, MainModule.App.canvas.height);
 
             this.context.save();
             this.context.translate(camera.x, camera.y);
