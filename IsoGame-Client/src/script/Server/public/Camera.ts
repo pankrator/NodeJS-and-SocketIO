@@ -12,8 +12,12 @@ module MainModule {
 		}
 		
 		public follow(target: Entity) {
-			this.x = -target.x + App.canvas.width / 2;
-			this.y = -target.y + App.canvas.height / 2;
+			var targetIso = Renderer.screenToIso(target.x, target.y);
+            this.x = -targetIso[0] + App.canvas.width / 2;
+            this.y = -targetIso[1] + App.canvas.height / 2;
+            
+//            this.x = -target.x + App.canvas.width / 2;
+//			this.y = -target.y + App.canvas.height / 2;
 		}
 	}
 }

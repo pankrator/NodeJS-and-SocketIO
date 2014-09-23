@@ -8,17 +8,31 @@ module MainModule {
         }
 
         public static screenToIso(screenX, screenY): number[] {
-            var isoX = Math.floor(screenY / 64 + screenX / (2 * 64));
-            var isoY = Math.floor(screenY / 64 - screenX / (2 * 64));
+            var isoX = screenX - screenY;
+            var isoY = (screenX + screenY) / 2;
 
             return [isoX, isoY];
         }
-
-        public static screenToGrid(screenX, screenY): number[] {
+        
+        public static isoToScreen(isoX, isoY) {
+            var screenX = (2 * isoY + isoX) / 2;
+            var screenY = (2 * isoY - isoX) / 2;
+            
+            return [screenX, screenY];
+        }
+        
+        public static getTileCoordinate(screenX, screenY) {
             var gridX = Math.floor(screenX / 48);
             var gridY = Math.floor(screenY / 48);
             
             return [gridX, gridY];
+        }
+        
+        public static gridToScreen(gridX, gridY) {
+            var screenX = gridX * 48;
+            var screenY = gridY * 48;
+            
+            return [screenX, screenY];
         }
 
         public render(camera: Camera): void {

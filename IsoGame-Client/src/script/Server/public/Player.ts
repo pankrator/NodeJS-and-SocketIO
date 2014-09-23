@@ -40,20 +40,8 @@ module MainModule {
 
             var frameWidth = images[this.direction].width / 15;
             var frameHeight = images[this.direction].height;
-            context.drawImage(images[this.direction], frameWidth * this.animationFrame, 0, frameWidth, frameHeight, this.x, this.y, frameWidth, frameHeight);
-
-            var isoMouse = Renderer.screenToIso(this.x + 68, this.y + 100);
-            context.strokeText(isoMouse[0] + " " + isoMouse[1] + " tile " + App.tileMap.collisionData[isoMouse[0]][isoMouse[1]], this.x + 68, this.y + 100);
-            
-            context.moveTo((isoMouse[0] * 64 - isoMouse[1] * 64), (isoMouse[1] * 64 + isoMouse[0] * 64) / 2);
-            context.lineTo(((isoMouse[0] + 1) * 64 - isoMouse[1] * 64), (isoMouse[1] * 64 + (isoMouse[0] + 1) * 64) / 2);
-            context.lineTo(((isoMouse[0] + 1) * 64 - (isoMouse[1] + 1) * 64), ((isoMouse[1] + 1) * 64 + (isoMouse[0] + 1) * 64) / 2);
-            context.stroke();
-            
-            context.beginPath();
-            context.fillStyle = "red";
-            context.rect(this.x + 68, this.y + 100, 5, 5);
-            context.fill();
+            var iso = Renderer.screenToIso(this.x + 68, this.y + 100); 
+            context.drawImage(images[this.direction], frameWidth * this.animationFrame, 0, frameWidth, frameHeight, iso[0], iso[1], frameWidth, frameHeight);
 
         }
 
@@ -70,32 +58,31 @@ module MainModule {
         }
 
 		public move(): void {
-            //            var iso = Renderer.screenToIso(this.x, this.y);
             if (App.inputManager.keys[KEYS.LEFT_ARROW]) {
                 this.direction = 2;
-                var iso = Renderer.screenToIso(this.x + 68 - 2, this.y + 100);
-                if (App.tileMap.collisionData[iso[0]][iso[1]] != 1) {
+                var grid = Renderer.getTileCoordinate(this.x + 68 - 2, this.y + 100);
+                if (App.tileMap.mapData[grid[0]][grid[1]] != 1) {
                     this.x -= 2;
                 }
             }
             if (App.inputManager.keys[KEYS.UP_ARROW]) {
                 this.direction = 1;
-                var iso = Renderer.screenToIso(this.x + 68, this.y + 100 - 2);
-                if (App.tileMap.collisionData[iso[0]][iso[1]] != 1) {
+                var grid = Renderer.getTileCoordinate(this.x + 68, this.y + 100 - 2);
+                if (App.tileMap.mapData[grid[0]][grid[1]] != 1) {
                     this.y -= 2;
                 }
             }
             if (App.inputManager.keys[KEYS.RIGHT_ARROW]) {
                 this.direction = 0;
-                var iso = Renderer.screenToIso(this.x + 68 + 2, this.y);
-                if (App.tileMap.collisionData[iso[0]][iso[1]] != 1) {
+                var grid = Renderer.getTileCoordinate(this.x + 68 + 2, this.y);
+                if (App.tileMap.mapData[grid[0]][grid[1]] != 1) {
                     this.x += 2;
                 }
             }
             if (App.inputManager.keys[KEYS.DOWN_ARROW]) {
                 this.direction = 3
-                var iso = Renderer.screenToIso(this.x + 68, this.y + 100 + 2);
-                if (App.tileMap.collisionData[iso[0]][iso[1]] != 1) {
+                var grid = Renderer.getTileCoordinate(this.x + 68, this.y + 100 + 2);
+                if (App.tileMap.mapData[grid[0]][grid[1]] != 1) {
                     this.y += 2;
                 }
             }
