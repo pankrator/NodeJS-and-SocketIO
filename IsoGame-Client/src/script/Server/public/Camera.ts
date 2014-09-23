@@ -12,8 +12,8 @@ module MainModule {
 		}
 		
 		public follow(target: Entity) {
-			this.x = -target.x + this.canvasWidth / 2;
-			this.y = -target.y + this.canvasHeight / 2;
+			this.x = -target.x + App.canvas.width / 2;
+			this.y = -target.y + App.canvas.height / 2;
 		}
 	}
 }

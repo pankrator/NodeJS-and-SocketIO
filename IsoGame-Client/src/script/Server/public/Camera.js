@@ -6,8 +6,8 @@ var MainModule;
             this.canvasHeight = height;
         }
         Camera.prototype.follow = function (target) {
-            this.x = -target.x + this.canvasWidth / 2;
-            this.y = -target.y + this.canvasHeight / 2;
+            this.x = -target.x + MainModule.App.canvas.width / 2;
+            this.y = -target.y + MainModule.App.canvas.height / 2;
         };
         return Camera;
     })();
