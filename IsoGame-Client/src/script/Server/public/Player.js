@@ -58,29 +58,33 @@ var MainModule;
         Player.prototype.move = function () {
             if (MainModule.App.inputManager.keys[KEYS.LEFT_ARROW]) {
                 this.direction = 2;
-                var grid = MainModule.Renderer.getTileCoordinate(this.x + 68 - 2, this.y + 100);
+                var grid = MainModule.Renderer.getTileCoordinate(this.x + 68 - 2, this.y + 100 + 2);
                 if (MainModule.App.tileMap.mapData[grid[0]][grid[1]] != 1) {
                     this.x -= 2;
+                    this.y += 2;
                 }
             }
             if (MainModule.App.inputManager.keys[KEYS.UP_ARROW]) {
                 this.direction = 1;
-                var grid = MainModule.Renderer.getTileCoordinate(this.x + 68, this.y + 100 - 2);
+                var grid = MainModule.Renderer.getTileCoordinate(this.x + 68 - 2, this.y + 100 - 2);
                 if (MainModule.App.tileMap.mapData[grid[0]][grid[1]] != 1) {
+                    this.x -= 2;
                     this.y -= 2;
                 }
             }
             if (MainModule.App.inputManager.keys[KEYS.RIGHT_ARROW]) {
                 this.direction = 0;
-                var grid = MainModule.Renderer.getTileCoordinate(this.x + 68 + 2, this.y);
+                var grid = MainModule.Renderer.getTileCoordinate(this.x + 68 + 2, this.y + 100 - 2);
                 if (MainModule.App.tileMap.mapData[grid[0]][grid[1]] != 1) {
                     this.x += 2;
+                    this.y -= 2;
                 }
             }
             if (MainModule.App.inputManager.keys[KEYS.DOWN_ARROW]) {
                 this.direction = 3;
-                var grid = MainModule.Renderer.getTileCoordinate(this.x + 68, this.y + 100 + 2);
+                var grid = MainModule.Renderer.getTileCoordinate(this.x + 68 + 2, this.y + 100 + 2);
                 if (MainModule.App.tileMap.mapData[grid[0]][grid[1]] != 1) {
+                    this.x += 2;
                     this.y += 2;
                 }
             }
