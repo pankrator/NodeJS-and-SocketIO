@@ -8,7 +8,7 @@ var MainModule;
 (function (MainModule) {
     var Player = (function (_super) {
         __extends(Player, _super);
-        function Player(name, x, y, size) {
+        function Player(name, x, y, size, stateMachine) {
             var _this = this;
             _super.call(this, x, y, size);
             this.updateAnimationFrame = function () {
@@ -21,6 +21,7 @@ var MainModule;
             this.name = name;
             this.animationFrame = 5;
             this.direction = 0;
+            this.stateMachine = stateMachine;
 
             this.updateAnimationFrame();
         }
@@ -47,7 +48,8 @@ var MainModule;
 
             var frameWidth = images[this.direction].width / 15;
             var frameHeight = images[this.direction].height;
-            var iso = MainModule.Renderer.screenToIso(this.x + 68, this.y + 100);
+
+            var iso = MainModule.Renderer.screenToIso(this.x, this.y);
             context.drawImage(images[this.direction], frameWidth * this.animationFrame, 0, frameWidth, frameHeight, iso[0], iso[1], frameWidth, frameHeight);
         };
 
@@ -58,7 +60,7 @@ var MainModule;
         Player.prototype.move = function () {
             if (MainModule.App.inputManager.keys[KEYS.LEFT_ARROW]) {
                 this.direction = 2;
-                var grid = MainModule.Renderer.getTileCoordinate(this.x + 68 - 2, this.y + 100 + 2);
+                var grid = MainModule.Renderer.getTileCoordinate(this.x - 2, this.y + 2);
                 if (MainModule.App.tileMap.mapData[grid[0]][grid[1]] != 1) {
                     this.x -= 2;
                     this.y += 2;
@@ -66,7 +68,7 @@ var MainModule;
             }
             if (MainModule.App.inputManager.keys[KEYS.UP_ARROW]) {
                 this.direction = 1;
-                var grid = MainModule.Renderer.getTileCoordinate(this.x + 68 - 2, this.y + 100 - 2);
+                var grid = MainModule.Renderer.getTileCoordinate(this.x - 2, this.y - 2);
                 if (MainModule.App.tileMap.mapData[grid[0]][grid[1]] != 1) {
                     this.x -= 2;
                     this.y -= 2;
@@ -74,7 +76,7 @@ var MainModule;
             }
             if (MainModule.App.inputManager.keys[KEYS.RIGHT_ARROW]) {
                 this.direction = 0;
-                var grid = MainModule.Renderer.getTileCoordinate(this.x + 68 + 2, this.y + 100 - 2);
+                var grid = MainModule.Renderer.getTileCoordinate(this.x + 2, this.y - 2);
                 if (MainModule.App.tileMap.mapData[grid[0]][grid[1]] != 1) {
                     this.x += 2;
                     this.y -= 2;
@@ -82,7 +84,7 @@ var MainModule;
             }
             if (MainModule.App.inputManager.keys[KEYS.DOWN_ARROW]) {
                 this.direction = 3;
-                var grid = MainModule.Renderer.getTileCoordinate(this.x + 68 + 2, this.y + 100 + 2);
+                var grid = MainModule.Renderer.getTileCoordinate(this.x + 2, this.y + 2);
                 if (MainModule.App.tileMap.mapData[grid[0]][grid[1]] != 1) {
                     this.x += 2;
                     this.y += 2;

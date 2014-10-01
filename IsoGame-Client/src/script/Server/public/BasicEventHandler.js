@@ -15,7 +15,7 @@ var MainModule;
                 _this.socket.emit("getAllPlayers");
 
                 //			console.log(this.socket);
-                _this.world.player = new MainModule.Player("Ime", 30, 30, 30);
+                _this.world.player = new MainModule.Player("Ime", 150, 150, 30);
                 MainModule.NetworkObjectCreator.create(_this.world.player, _this.socket, 0 /* PLAYER */, _this.socket.io.engine.id).update();
 
                 _this.socket.emit("newPlayerConnected", { id: _this.socket.io.engine.id, data: _this.world.player });

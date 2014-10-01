@@ -29,7 +29,7 @@ module MainModule {
 			this.socket.emit("getAllPlayers");
 //			console.log(this.socket);
 			
-			this.world.player = new Player("Ime", 30, 30, 30);
+			this.world.player = new Player("Ime", 150, 150, 30);
 			NetworkObjectCreator.create(this.world.player, this.socket, NetworkUpdateContext.PLAYER, this.socket.io.engine.id).update();
 			
 			this.socket.emit("newPlayerConnected", {id: this.socket.io.engine.id, data: this.world.player});

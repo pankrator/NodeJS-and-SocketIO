@@ -43,6 +43,7 @@ var MainModule;
             this.context.save();
             this.context.translate(camera.x, camera.y);
 
+            MainModule.App.tileMap.draw(this.context);
 
             //			App.world.player.draw( this.context )
             var remotes = new Array();
@@ -58,7 +59,6 @@ var MainModule;
             for (var i = 0; i < remotes.length; i++) {
                 remotes[i].draw(this.context);
             }
-            MainModule.App.tileMap.draw(this.context);
 
             this.context.restore();
 
