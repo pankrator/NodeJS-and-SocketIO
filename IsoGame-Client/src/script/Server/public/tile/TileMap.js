@@ -75,19 +75,10 @@ var MainModule;
                         var screen = MainModule.Renderer.gridToScreen(i, j);
                         var iso = MainModule.Renderer.screenToIso(screen[0], screen[1]);
 
-                        //                        ctx.rect(iso[0] + 48, iso[1] + 48, 5, 5);
-                        //                        ctx.fill();
                         ctx.drawImage(this.images[0], iso[0] + 48, iso[1] + 48);
                     } else if (this.mapData[i][j] == 2) {
                         ctx.fillRect((i * 48) - (j * 48), (j * 48 + i * 48) / 2, 5, 5);
                         ctx.drawImage(this.images[1], (i * 48) - (j * 48), (j * 48 + i * 48) / 2);
-                    } else {
-                        if (this.debug) {
-                            ctx.moveTo((i * 48 - j * 48) + 48, (j * 48 + i * 48) / 2 + 48);
-                            ctx.lineTo(((i + 1) * 48 - j * 48) + 48, (j * 48 + (i + 1) * 48) / 2 + 48);
-                            ctx.lineTo(((i + 1) * 48 - (j + 1) * 48) + 48, ((j + 1) * 48 + (i + 1) * 48) / 2 + 48);
-                            ctx.stroke();
-                        }
                     }
                 }
             }
