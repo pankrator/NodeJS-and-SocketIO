@@ -19,9 +19,6 @@ var MainModule;
         Entity.prototype.update = function () {
         };
 
-        Entity.prototype.draw = function (context) {
-        };
-
         Entity.prototype.getAABB = function () {
             return this.collisionMesh;
         };

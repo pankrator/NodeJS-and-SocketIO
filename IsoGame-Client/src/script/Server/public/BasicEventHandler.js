@@ -5,7 +5,7 @@ var MainModule;
         function BasicEventHandler(socket, world) {
             var _this = this;
             this.onPlayerConnected = function (data) {
-                var player = new MainModule.Player(data.data.name, data.data.x, data.data.y, data.data.sizeX);
+                var player = new MainModule.Player(data.data.name, data.data.x, data.data.y, data.data.sizeX, null);
                 MainModule.NetworkObjectCreator.create(player, _this.socket, 0 /* PLAYER */, data.id);
 
                 _this.world.remotePlayers[data.id] = player;
@@ -15,7 +15,10 @@ var MainModule;
                 _this.socket.emit("getAllPlayers");
 
                 //			console.log(this.socket);
-                _this.world.player = new MainModule.Player("Ime", 150, 150, 30);
+                _this.world.playerController = new MainModule.CharacterController(_this.world.player);
+                _this.world.player = new MainModule.Player("Ime", 150, 150, 30, null);
+                var characterStateMachine = MainModule.StateMachineUtils.getPlayerStates(_this.world.player);
+                _this.world.player.stateMachine = characterStateMachine;
                 MainModule.NetworkObjectCreator.create(_this.world.player, _this.socket, 0 /* PLAYER */, _this.socket.io.engine.id).update();
 
                 _this.socket.emit("newPlayerConnected", { id: _this.socket.io.engine.id, data: _this.world.player });

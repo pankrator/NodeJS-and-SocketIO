@@ -18,7 +18,7 @@ module MainModule {
 		}
 
 		private onPlayerConnected = (data: any): void => {
-			var player = new Player(data.data.name, data.data.x, data.data.y, data.data.sizeX);
+			var player = new Player(data.data.name, data.data.x, data.data.y, data.data.sizeX, null);
 			NetworkObjectCreator.create(player, this.socket, NetworkUpdateContext.PLAYER, data.id);
 							
 			this.world.remotePlayers[data.id] = player;
@@ -29,7 +29,10 @@ module MainModule {
 			this.socket.emit("getAllPlayers");
 //			console.log(this.socket);
 			
-			this.world.player = new Player("Ime", 150, 150, 30);
+            this.world.playerController = new CharacterController(this.world.player);
+			this.world.player = new Player("Ime", 150, 150, 30, null);
+            var characterStateMachine = StateMachineUtils.getPlayerStates(this.world.player);
+            this.world.player.stateMachine = characterStateMachine;
 			NetworkObjectCreator.create(this.world.player, this.socket, NetworkUpdateContext.PLAYER, this.socket.io.engine.id).update();
 			
 			this.socket.emit("newPlayerConnected", {id: this.socket.io.engine.id, data: this.world.player});

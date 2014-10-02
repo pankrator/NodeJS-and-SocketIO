@@ -1,4 +1,10 @@
 module MainModule {
+
+    export enum PlayerStates {
+        Idle,
+        Walking
+    }
+
     export class Player extends Entity implements NetworkUpdatable {
 
         public name: String;
@@ -11,7 +17,7 @@ module MainModule {
 
 
         constructor(name: String, x: number, y: number, size: number,
-             stateMachine: StateMachine) {
+            stateMachine: StateMachine) {
             super(x, y, size);
             this.name = name;
             this.animationFrame = 5;
@@ -51,7 +57,6 @@ module MainModule {
         }
 
         public update(): void {
-            this.move();
         }
 		
 		private updateAnimationFrame = (): void => {
@@ -60,41 +65,6 @@ module MainModule {
                 this.animationFrame = 0;
             }
             setTimeout(this.updateAnimationFrame, 100);
-        }
-
-		public move(): void {
-            if (App.inputManager.keys[KEYS.LEFT_ARROW]) {
-                this.direction = 2;
-                var grid = Renderer.getTileCoordinate(this.x - 2, this.y + 2);
-                if (App.tileMap.mapData[grid[0]][grid[1]] != 1) {
-                    this.x -= 2;
-                    this.y += 2;
-                }
-            }
-            if (App.inputManager.keys[KEYS.UP_ARROW]) {
-                this.direction = 1;
-                var grid = Renderer.getTileCoordinate(this.x - 2, this.y - 2);
-                if (App.tileMap.mapData[grid[0]][grid[1]] != 1) {
-                    this.x -= 2;
-                    this.y -= 2;
-                }
-            }
-            if (App.inputManager.keys[KEYS.RIGHT_ARROW]) {
-                this.direction = 0;
-                var grid = Renderer.getTileCoordinate(this.x + 2, this.y - 2);
-                if (App.tileMap.mapData[grid[0]][grid[1]] != 1) {
-                    this.x += 2;
-                    this.y -= 2;
-                }
-            }
-            if (App.inputManager.keys[KEYS.DOWN_ARROW]) {
-                this.direction = 3
-                var grid = Renderer.getTileCoordinate(this.x + 2, this.y + 2);
-                if (App.tileMap.mapData[grid[0]][grid[1]] != 1) {
-                    this.x += 2;
-                    this.y +=2;
-                }
-            }
         }
 
         public updateState(data: any): void {

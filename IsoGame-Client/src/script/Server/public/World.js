@@ -6,7 +6,7 @@ var MainModule;
             this.entities = new Array();
         }
         World.prototype.update = function () {
-            this.player.update();
+            this.playerController.handleKeyboard(MainModule.App.inputManager);
             for (var i = 0; i < this.entities.length; i++) {
                 this.entities[i].update();
             }

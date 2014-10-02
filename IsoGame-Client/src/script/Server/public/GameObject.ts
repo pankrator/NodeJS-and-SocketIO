@@ -1,9 +1,13 @@
 module MainModule {
-	export class GameObject {
+    export class GameObject {
 
-		constructor() {
-		}
-	}
+        constructor() {
+        }
+
+        public draw(context: CanvasRenderingContext2D): void {
+            
+        }
+    }
 }
 
 

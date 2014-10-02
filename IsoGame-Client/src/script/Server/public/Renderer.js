@@ -46,20 +46,37 @@ var MainModule;
             MainModule.App.tileMap.draw(this.context);
 
             //			App.world.player.draw( this.context )
-            var remotes = new Array();
+            var drawables = new Array();
             for (var id in MainModule.App.world.remotePlayers) {
-                remotes.push(MainModule.App.world.remotePlayers[id]);
+                drawables.push(MainModule.App.world.remotePlayers[id]);
             }
-            remotes.push(MainModule.App.world.player);
 
-            remotes.sort(function (a, b) {
+            //            for (var i = 0; i < App.tileMap.mapData.length; i++) {
+            //                for (var j = 0; j < App.tileMap.mapData[i].length; j++) {
+            //                    var tile = App.tileMap.mapData[i][j];
+            //                    if (tile == 1) {
+            //                        var screen = Renderer.gridToScreen(i, j);
+            //                        var iso = Renderer.screenToIso(screen[0], screen[1]);
+            //                        drawables.push({
+            //                            x: iso[0],
+            //                            y: iso[1],
+            //                            draw: function(ctx: CanvasRenderingContext2D) {
+            //
+            //                                ctx.drawImage(App.tileMap.images[0], iso[0] + 48, iso[1] + 48);
+            //                            }
+            //                        });
+            //                    }
+            //                }
+            //            }
+            drawables.push(MainModule.App.world.player);
+
+            drawables.sort(function (a, b) {
                 return a.y - b.y;
             });
 
-            for (var i = 0; i < remotes.length; i++) {
-                remotes[i].draw(this.context);
+            for (var i = 0; i < drawables.length; i++) {
+                drawables[i].draw(this.context);
             }
-
             this.context.restore();
 
             if (MainModule.App.inputManager.mouseDown) {

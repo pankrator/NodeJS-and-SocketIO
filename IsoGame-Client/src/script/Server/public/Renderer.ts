@@ -13,25 +13,25 @@ module MainModule {
 
             return [isoX, isoY];
         }
-        
+
         public static isoToScreen(isoX, isoY) {
             var screenX = (2 * isoY + isoX) / 2;
             var screenY = (2 * isoY - isoX) / 2;
-            
+
             return [screenX, screenY];
         }
-        
+
         public static getTileCoordinate(screenX, screenY) {
             var gridX = Math.floor(screenX / 48);
             var gridY = Math.floor(screenY / 48);
-            
+
             return [gridX, gridY];
         }
-        
+
         public static gridToScreen(gridX, gridY) {
             var screenX = gridX * 48;
             var screenY = gridY * 48;
-            
+
             return [screenX, screenY];
         }
 
@@ -48,20 +48,36 @@ module MainModule {
             App.tileMap.draw(this.context);
 
             //			App.world.player.draw( this.context )			
-            var remotes = new Array<Player>();
+            var drawables = new Array<GameObject>();
             for (var id in App.world.remotePlayers) {
-                remotes.push(App.world.remotePlayers[id]);
+                drawables.push(App.world.remotePlayers[id]);
             }
-            remotes.push(App.world.player);
+//            for (var i = 0; i < App.tileMap.mapData.length; i++) {
+//                for (var j = 0; j < App.tileMap.mapData[i].length; j++) {
+//                    var tile = App.tileMap.mapData[i][j];
+//                    if (tile == 1) {
+//                        var screen = Renderer.gridToScreen(i, j);
+//                        var iso = Renderer.screenToIso(screen[0], screen[1]);
+//                        drawables.push({
+//                            x: iso[0],
+//                            y: iso[1],
+//                            draw: function(ctx: CanvasRenderingContext2D) {
+//                                
+//                                ctx.drawImage(App.tileMap.images[0], iso[0] + 48, iso[1] + 48);
+//                            }
+//                        });
+//                    }
+//                }
+//            }
+            drawables.push(App.world.player);
 
-            remotes.sort((a, b): number => {
+            drawables.sort((a, b): number => {
                 return a.y - b.y;
             });
 
-            for (var i = 0; i < remotes.length; i++) {
-                remotes[i].draw(this.context);
+            for (var i = 0; i < drawables.length; i++) {
+                drawables[i].draw(this.context);
             }
-
             this.context.restore();
 
             if (App.inputManager.mouseDown) {

@@ -6,6 +6,12 @@ var __extends = this.__extends || function (d, b) {
 };
 var MainModule;
 (function (MainModule) {
+    (function (PlayerStates) {
+        PlayerStates[PlayerStates["Idle"] = 0] = "Idle";
+        PlayerStates[PlayerStates["Walking"] = 1] = "Walking";
+    })(MainModule.PlayerStates || (MainModule.PlayerStates = {}));
+    var PlayerStates = MainModule.PlayerStates;
+
     var Player = (function (_super) {
         __extends(Player, _super);
         function Player(name, x, y, size, stateMachine) {
@@ -54,42 +60,6 @@ var MainModule;
         };
 
         Player.prototype.update = function () {
-            this.move();
-        };
-
-        Player.prototype.move = function () {
-            if (MainModule.App.inputManager.keys[KEYS.LEFT_ARROW]) {
-                this.direction = 2;
-                var grid = MainModule.Renderer.getTileCoordinate(this.x - 2, this.y + 2);
-                if (MainModule.App.tileMap.mapData[grid[0]][grid[1]] != 1) {
-                    this.x -= 2;
-                    this.y += 2;
-                }
-            }
-            if (MainModule.App.inputManager.keys[KEYS.UP_ARROW]) {
-                this.direction = 1;
-                var grid = MainModule.Renderer.getTileCoordinate(this.x - 2, this.y - 2);
-                if (MainModule.App.tileMap.mapData[grid[0]][grid[1]] != 1) {
-                    this.x -= 2;
-                    this.y -= 2;
-                }
-            }
-            if (MainModule.App.inputManager.keys[KEYS.RIGHT_ARROW]) {
-                this.direction = 0;
-                var grid = MainModule.Renderer.getTileCoordinate(this.x + 2, this.y - 2);
-                if (MainModule.App.tileMap.mapData[grid[0]][grid[1]] != 1) {
-                    this.x += 2;
-                    this.y -= 2;
-                }
-            }
-            if (MainModule.App.inputManager.keys[KEYS.DOWN_ARROW]) {
-                this.direction = 3;
-                var grid = MainModule.Renderer.getTileCoordinate(this.x + 2, this.y + 2);
-                if (MainModule.App.tileMap.mapData[grid[0]][grid[1]] != 1) {
-                    this.x += 2;
-                    this.y += 2;
-                }
-            }
         };
 
         Player.prototype.updateState = function (data) {

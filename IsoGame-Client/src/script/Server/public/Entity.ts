@@ -19,10 +19,6 @@ module MainModule {
 		public update() {
 		}
 
-		public draw(context: CanvasRenderingContext2D) {
-
-		}
-
 		public getAABB(): RectangleMesh {
 			return this.collisionMesh;
 		}
